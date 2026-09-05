@@ -36,4 +36,4 @@ cargo doc --locked --no-deps
 
 Linux live test: xvfb-run -s "-screen 0 1400x1000x24" python3 tools/live_test.py target/release/examples/showcase
 
-Keep docs examples in sync with compiled examples. Do not call Linux tests macOS/Windows validation. Never claim an unrun build passed. Preserve BUSL-1.1 -> GPL-3.0-only parameters and third-party notices. No registry publishing is configured.
+Keep docs examples in sync with compiled examples. Do not call Linux tests macOS/Windows validation. Never claim an unrun build passed. Preserve BUSL-1.1 -> GPL-3.0-only parameters and third-party notices. Use cargo add forge-ui@0.1.0 for the crates.io library; no cargo-install binary is supplied. Publishing is a deliberate maintainer action, not a side effect of CI.

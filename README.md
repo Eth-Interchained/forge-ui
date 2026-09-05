@@ -4,7 +4,21 @@
 
 An independently implemented widget tree, layout engine, software rasterizer and interaction runtime. No egui, iced, Slint, GTK, browser or webview. Low-level platform work is delegated to winit, softbuffer and fontdue. The native workbench dogfoods the real **nedb-engine 2.8.6** for durable application state and causal history.
 
-![Native Forge UI workbench](docs/assets/dark.png)
+![Native Forge UI workbench](https://raw.githubusercontent.com/Eth-Interchained/forge-ui/main/docs/assets/dark.png)
+
+## Add the library
+
+```sh
+cargo add forge-ui@0.1.0
+```
+
+Default features include the optional NEDB adapter. For just the GUI core:
+
+```sh
+cargo add forge-ui@0.1.0 --no-default-features
+```
+
+This is a library crate, not a `cargo install` command-line package. Run the showcase from the repository below.
 
 ## Run it
 
@@ -46,14 +60,16 @@ cargo run --locked --example minimal --no-default-features
 cargo doc --locked --no-deps --open
 ```
 
-Use a path dependency while the package is not on crates.io:
+In your application's manifest:
 
 ```toml
 [dependencies]
-forge-ui = { path = "../forge-ui", default-features = false }
+forge-ui = "0.1.0"
 ```
 
-See [the full guide](docs/guide.md), [agent instructions](AGENTS.md), [protocol schema](docs/protocol.schema.json) and [live test](tools/live_test.py). The styled docs are `docs/index.html`, also served via GitHub Pages when enabled.
+For the core without storage, use `forge-ui = { version = "0.1.0", default-features = false }`. A path dependency remains useful when developing the framework locally.
+
+See [the full guide](docs/guide.md), [agent instructions](AGENTS.md), [protocol schema](docs/protocol.schema.json) and [live test](tools/live_test.py). The styled [docs site](https://eth-interchained.github.io/forge-ui/) is live. The repository and source ZIP include its offline copy at `docs/index.html`; the lean crates.io package includes Markdown and schema instead of generated site assets.
 
 ## Agents can read and operate it
 
