@@ -1,0 +1,16 @@
+[package]
+name = "forge-desk"
+version = "0.1.0"
+edition = "2021"
+publish = false
+license = "BUSL-1.1"
+description = "A local-first desktop starter built on the published Forge UI crate"
+
+[dependencies]
+forge-ui = "=0.1.0"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+lto = "thin"
+strip = true

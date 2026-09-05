@@ -1,0 +1,5 @@
+/target/
+/.forge-desk-data/
+*.log
+*.ppm
+__pycache__/

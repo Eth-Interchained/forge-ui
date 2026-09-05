@@ -12,7 +12,7 @@ documentation = "https://eth-interchained.github.io/forge-ui/api/forge_ui/"
 keywords = ["gui", "desktop", "agents", "widgets", "nedb"]
 categories = ["gui"]
 include = [
-    "src/**", "assets/**", "examples/**", "tests/**",
+    "src/**", "assets/**", "examples/*.rs", "tests/**",
     "Cargo.toml", "Cargo.lock", "README.md", "AGENTS.md",
     "LICENSE", "COPYING-GPL-3.0.txt", "THIRD_PARTY.md", "third-party/**",
     "docs/guide.md", "docs/protocol.schema.json", "docs/llms.txt",
