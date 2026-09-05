@@ -1,0 +1,29 @@
+{
+  "platform": "Linux x86_64 / X11 / Xvfb",
+  "build": "release",
+  "native_checks_passed": 21,
+  "checks": [
+    "native window and semantic tree ready",
+    "agent button updates live app",
+    "durable NEDB receipt returned",
+    "disabled control rejected",
+    "unknown ID rejected",
+    "out-of-range agent value rejected",
+    "agent text editing applied",
+    "agent slider applied",
+    "XTest pointer traverses native event loop",
+    "XTest keyboard edits focused text",
+    "native Tab focus and arrow slider",
+    "light theme state applied",
+    "dark theme state applied",
+    "screenshot refuses overwrite",
+    "native wheel scrolls actual viewport",
+    "native resize relayouts tree",
+    "SIGKILL restart restores acknowledged state",
+    "SIGKILL restart preserves receipt hash",
+    "restart verifies real NEDB objects",
+    "restore appends historical state",
+    "in-app verify succeeds"
+  ],
+  "other_platforms": "not native-interaction verified"
+}

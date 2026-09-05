@@ -1,0 +1,45 @@
+name: Forge verification
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-15]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Linux native headers
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libx11-dev libxcb1-dev libxkbcommon-dev libxkbcommon-x11-dev libxcursor-dev libxrandr-dev libxi-dev libwayland-dev libegl1-mesa-dev xvfb libxtst6
+      - run: cargo fmt --all --check
+      - run: cargo clippy --locked --all-targets --all-features -- -D warnings
+      - run: cargo test --locked
+      - run: cargo test --locked --no-default-features
+      - run: cargo build --locked --release --examples
+      - run: cargo doc --locked --no-deps
+      - name: Native XTest and crash recovery
+        if: runner.os == 'Linux'
+        run: xvfb-run -s '-screen 0 1400x1000x24' python3 tools/live_test.py target/release/examples/showcase
+      - name: Workbench build
+        uses: actions/upload-artifact@v4
+        with:
+          name: forge-workbench-${{ runner.os }}-${{ runner.arch }}
+          path: |
+            target/release/examples/showcase
+            target/release/examples/showcase.exe
+            LICENSE
+            THIRD_PARTY.md
+            COPYING-GPL-3.0.txt
+            README.md
+            assets/FONT-LICENSE.txt

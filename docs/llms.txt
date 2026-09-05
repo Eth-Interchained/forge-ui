@@ -1,0 +1,11 @@
+# Forge UI 0.1.0
+
+> Native Rust GUI framework with owned layout/rasterization, semantic agent control, and optional real embedded NEDB history. Source-available BUSL-1.1 -> GPL-3.0-only, 2030-09-05.
+
+- [Full guide](guide.md): API, limits, architecture and walkthrough.
+- [Request schema](protocol.schema.json): JSON-lines protocol forge-ui/1.
+- [Rust API](api/forge_ui/index.html): generated reference.
+- [Repository](https://github.com/Eth-Interchained/forge-ui): source, tests, AGENTS.md.
+- [Coding-agent instructions](https://github.com/Eth-Interchained/forge-ui/blob/main/AGENTS.md): build rules and verification gates.
+
+No browser/webview, HTTP listener or LLM dependency. Wait for ready before speaking the local stdin/stdout protocol. Inspect stable IDs and supported actions. Mutate through typed controls, then assert app state and storage_error. Do not claim native macOS/Windows behavior from Linux test results.

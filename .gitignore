@@ -1,0 +1,6 @@
+/target/
+/.forge-ui-data/
+/.forge-agent-data/
+*.log
+__pycache__/
+*.ppm

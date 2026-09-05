@@ -1,0 +1,254 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Forge UI: a native Rust GUI framework with semantic agent control and real NEDB state history. Documentation and test walkthrough."><title>Forge UI — Field Manual</title><style>
+@font-face{font-family:Forge;src:url(assets/DejaVuSans.ttf)}@font-face{font-family:Forge;src:url(assets/DejaVuSans-Bold.ttf);font-weight:700}
+:root{--bg:#f1f2ef;--paper:#fff;--ink:#182025;--muted:#56636c;--line:#c8ceca;--accent:#c73e26;--code:#101316;--mint:#8cdbb6}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:40px}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.8 Forge,Arial,sans-serif}body.dark{--bg:#101316;--paper:#191d21;--ink:#f2f3ef;--muted:#9ca8b2;--line:#343c43;--accent:#ff6548}a{color:var(--accent);text-underline-offset:4px}button,input{font:inherit}button{cursor:pointer}.rail{position:fixed;inset:0 auto 0 0;width:256px;padding:32px 24px;background:#101316;color:#f2f3ef;overflow-y:auto;border-right:1px solid #343c43}.brand{font-size:24px;font-weight:700;letter-spacing:.01em;color:inherit;text-decoration:none}.eyebrow{font-size:10px;letter-spacing:.12em;font-weight:700;color:var(--accent);text-transform:uppercase}.rail .eyebrow{color:#ff6548;margin:2px 0 32px}.search{width:100%;background:#191d21;border:1px solid #343c43;padding:10px;color:white;margin-bottom:22px}.rail nav a{display:flex;gap:10px;color:#bac3c9;text-decoration:none;padding:8px 0;font-size:11px;line-height:1.7}.rail nav a:hover{color:#ff6548}.rail nav span{color:#66727c;font-size:10px}.rail-foot{border-top:1px solid #343c43;padding-top:22px;margin-top:28px;color:#9ca8b2;font-size:10px}.rail-foot a{color:#8cdbb6}.main{margin-left:256px}.topbar{display:flex;justify-content:space-between;align-items:center;padding:18px 48px;border-bottom:1px solid var(--line);font-size:11px}.topbar button{background:none;border:1px solid var(--line);padding:7px 13px;color:var(--ink)}.hero{padding:60px 48px 36px;max-width:1250px;margin:auto}.hero h1{font-size:clamp(40px,5.5vw,76px);line-height:1.02;letter-spacing:-.055em;margin:24px 0}.hero h1 em{font-style:normal;color:var(--accent)}.lede{max-width:680px;color:var(--muted);font-size:16px;line-height:1.8}.actions{display:flex;gap:12px;margin:26px 0;flex-wrap:wrap}.actions a{padding:10px 18px;border:1px solid var(--line);text-decoration:none;font-size:12px;font-weight:700}.actions a:first-child{color:var(--paper);background:var(--accent);border-color:var(--accent)}.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin:42px 0 34px;border-top:1px solid var(--line);padding-top:22px}.pillars b{display:block;font-size:16px}.pillars p{color:var(--muted);font-size:12px;margin:5px 0}.figure{margin:0;border:1px solid var(--line);background:#101316}.figure img{display:block;width:100%;height:auto}.figure figcaption{padding:12px 16px;font-size:10px;color:#9ca8b2;display:flex;justify-content:space-between;gap:12px}.tabs{display:flex;gap:5px}.tabs button{border:1px solid #343c43;background:none;color:#f2f3ef;font-size:10px;padding:3px 10px}.tabs button[aria-pressed=true]{color:#ff6548;border-color:#ff6548}.reading{max-width:1050px;margin:auto;padding:0 48px 80px}.reading h2{font-size:30px;line-height:1.3;letter-spacing:-.03em;margin:68px 0 22px;padding-top:24px;border-top:1px solid var(--line)}.reading h3{font-size:18px;margin-top:30px}.reading p,.reading li{color:var(--muted)}.reading code{font:12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;background:var(--paper);padding:2px 5px;color:var(--accent);overflow-wrap:anywhere}.reading pre{position:relative;background:var(--code);color:#e0e5df;padding:24px;overflow:auto;border-left:3px solid var(--accent);line-height:1.7}.reading pre code{color:#dce4dd;background:none;padding:0;overflow-wrap:normal}.copy{position:absolute;right:10px;top:8px;background:#242a30;border:1px solid #343c43;color:#bbc5ce;padding:3px 9px;font-size:10px}.reading table{width:100%;border-collapse:collapse;font-size:12px;display:block;overflow:auto}.reading th{text-align:left;background:var(--paper);color:var(--ink);font-size:10px;text-transform:uppercase;letter-spacing:.05em}.reading td,.reading th{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}.reading td{color:var(--muted)}.foot{padding:30px 48px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.mark{outline:2px solid var(--accent);outline-offset:8px}.mobile-brand{display:none}@media(max-width:950px){.rail{width:210px;padding:24px 18px}.main{margin-left:210px}.hero,.reading{padding-left:28px;padding-right:28px}.topbar{padding:18px 28px}}@media(max-width:700px){.rail{position:static;width:auto;padding:20px 24px}.rail nav,.rail .search,.rail-foot{display:none}.rail .eyebrow{margin:0}.main{margin:0}.hero{padding-top:34px}.pillars{grid-template-columns:1fr;gap:12px}.hero h1{font-size:48px}.topbar{padding:12px 24px}.reading h2{font-size:25px}.figure figcaption{flex-direction:column}.reading pre{padding:28px 16px 16px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style></head><body><aside class="rail"><a class="brand" href="#">FORGE / UI</a><p class="eyebrow">0.1 · Field manual</p><input class="search" id="search" aria-label="Find documentation" placeholder="Find in the manual ↵"><nav><a href="#start-with-a-real-window"><span>01</span>Start with a real window</a><a href="#your-five-minute-walkthrough"><span>02</span>Your five-minute walkthrough</a><a href="#build-an-application"><span>03</span>Build an application</a><a href="#compose-the-surface"><span>04</span>Compose the surface</a><a href="#make-it-yours"><span>05</span>Make it yours</a><a href="#give-agents-a-readable-interface"><span>06</span>Give agents a readable interface</a><a href="#state-with-receipts"><span>07</span>State with receipts</a><a href="#understand-the-engine"><span>08</span>Understand the engine</a><a href="#verify-instead-of-assuming"><span>09</span>Verify instead of assuming</a><a href="#license-and-ownership"><span>10</span>License and ownership</a></nav><div class="rail-foot">BUILT FOR READABILITY<br>Human-readable. Machine-operable.<br><br><a href="guide.md">Plain Markdown</a> · <a href="protocol.schema.json">JSON Schema</a><br><a href="llms.txt">Agent index</a> · <a href="api/forge_ui/index.html">Rust API</a></div></aside><main class="main"><div class="topbar"><span>INTERCHAINED / DEVELOPER TOOLS</span><button id="theme" aria-label="Toggle documentation theme">Carbon / Porcelain</button></div><header class="hero"><div class="eyebrow">Native Rust · Agent-readable · NEDB-backed</div><h1>Own the surface.<br><em>Read the state.</em></h1><p class="lede">A desktop framework that draws its own pixels, names every control, and remembers what happened. This is the manual for building with Forge UI—not a roadmap disguised as documentation.</p><div class="actions"><a href="#start-with-a-real-window">Run the workbench</a><a href="https://github.com/Eth-Interchained/forge-ui" target="_blank" rel="noopener noreferrer">Source on GitHub ↗</a><a href="#give-agents-a-readable-interface">Build with agents</a></div><div class="pillars"><div><span class="eyebrow">01 / Surface</span><b>No borrowed toolkit.</b><p>Owned layout, painting and interactions. Low-level native adapters.</p></div><div><span class="eyebrow">02 / Semantics</span><b>No coordinate guessing.</b><p>Stable IDs. Typed actions. Inspectable state. One runtime.</p></div><div><span class="eyebrow">03 / Memory</span><b>No disposable history.</b><p>Real NEDB versions and causal links. Restore by appending.</p></div></div><figure class="figure"><img id="shot" src="assets/dark.png" alt="Actual Forge UI native desktop workbench with controls, signal graph and NEDB history"><figcaption><span>ACTUAL NATIVE RENDER · LINUX / X11 · NOT A WEB MOCKUP</span><span class="tabs"><button data-shot="dark" aria-pressed="true">Carbon</button><button data-shot="light" aria-pressed="false">Porcelain</button><button data-shot="history" aria-pressed="false">History</button></span></figcaption></figure></header><article class="reading"><h2 id="start-with-a-real-window">Start with a real window</h2>
+<p>Forge UI is a small native Rust framework with its own tree, layout engine, pixel renderer and interaction runtime. It is not a theme around another GUI toolkit. The same control surface has two entrances: a person using mouse and keyboard, and an agent using a semantic protocol.</p>
+<p>The workbench is an executable example, not the framework itself. Its custom signal plot demonstrates extension; its real embedded NEDB journal demonstrates ownership of state.</p>
+<h3 id="run-the-workbench">Run the workbench</h3>
+<pre><code class="language-sh">git clone https://github.com/Eth-Interchained/forge-ui.git
+cd forge-ui
+cargo run --locked --release --example showcase
+</code></pre>
+<p>Use a current stable Rust toolchain. macOS needs Xcode command-line tools. Windows needs the MSVC toolchain plus Visual Studio C++ Build Tools and Windows SDK. Linux needs a desktop display and native headers; the README lists packages. The initial live verification was Linux/X11, not macOS or Windows. A successful build on another platform is not proof of native input behavior there.</p>
+<p>The first build downloads and compiles dependencies. There is no JavaScript runtime, cloud account, API key or inference bill. The compiled application uses bundled fonts offline.</p>
+<h2 id="your-five-minute-walkthrough">Your five-minute walkthrough</h2>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Try this</th>
+<th>Expected result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01</td>
+<td>Click Add one</td>
+<td>Count increases. The custom plot changes. A saved sequence appears.</td>
+</tr>
+<tr>
+<td>02</td>
+<td>Edit Project name</td>
+<td>Click positions the caret; drag selects. Ctrl/Cmd+A replaces the full text.</td>
+</tr>
+<tr>
+<td>03</td>
+<td>Drag Signal amplitude</td>
+<td>Plot height tracks the slider. Keyboard arrows work after Tab focus.</td>
+</tr>
+<tr>
+<td>04</td>
+<td>Toggle Porcelain mode</td>
+<td>The same tree renders with the light token set.</td>
+</tr>
+<tr>
+<td>05</td>
+<td>Enable Layout outlines</td>
+<td>Every visible node shows its actual rectangle.</td>
+</tr>
+<tr>
+<td>06</td>
+<td>Scroll down</td>
+<td>Causal action history shows source, sequence and hash.</td>
+</tr>
+<tr>
+<td>07</td>
+<td>Close and reopen</td>
+<td>Name, counter, gain and theme restore from the same NEDB store.</td>
+</tr>
+<tr>
+<td>08</td>
+<td>Restore previous</td>
+<td>A past state returns as a new immutable version. No history is removed.</td>
+</tr>
+<tr>
+<td>09</td>
+<td>Verify store</td>
+<td>The last-audit count updates; any integrity failure is visible.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Click the disabled button</td>
+<td>Nothing happens. The agent route rejects it too.</td>
+</tr>
+</tbody>
+</table>
+<p>For an independent test, select a new data directory. Never delete a store just to reset the UI.</p>
+<pre><code class="language-sh">cargo run --locked --release --example showcase -- --data ./second-store
+</code></pre>
+<p>The default <code>.forge-ui-data</code> is relative to your current working directory. Changing directories changes the default store. A process-level lock prevents two workbenches from opening the same directory concurrently.</p>
+<h2 id="build-an-application">Build an application</h2>
+<p>Implement <code>Application::view</code> to describe the tree. Implement <code>Application::update</code> to reduce semantic actions into your own state. Keep view construction free of I/O. Interaction state—focus, cursor, pressed control and scroll offset—is retained by <code>Ui</code> using stable IDs.</p>
+<pre><code class="language-rust">use forge_ui::*;
+
+struct Counter(i32);
+
+impl Application for Counter {
+    fn view(&amp;self) -&gt; Node {
+        Node::column(&quot;root&quot;, vec![
+            Node::label(&quot;title&quot;, &quot;Hello, Forge.&quot;)
+                .font_size(32.0).bold(),
+            Node::label(&quot;count&quot;, format!(&quot;Count: {}&quot;, self.0)),
+            Node::button(&quot;add&quot;, &quot;Add one&quot;).width(180.0),
+        ]).padding(32.0).gap(16.0)
+    }
+
+    fn update(&amp;mut self, action: Action) {
+        if action.id == &quot;add&quot; { self.0 += 1; }
+    }
+}
+
+fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    run(Counter(0), WindowOptions::default())
+}
+</code></pre>
+<p>The equivalent complete program is <code>examples/minimal.rs</code>; it is compiled by the build gate. Use <code>cargo run --example minimal --no-default-features</code> to exercise the GUI without NEDB. For a new project, use a path dependency with <code>default-features = false</code>. Enable the <code>nedb</code> feature when you want the journal adapter. The showcase requires it; the layout/rendering engine does not.</p>
+<h2 id="compose-the-surface">Compose the surface</h2>
+<p>Every node has a unique string ID, a kind, style, enabled flag and children. Duplicate or empty IDs are rejected. IDs should express durable purpose—<code>project_name</code>, not a label that changes on every keystroke.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Constructor</th>
+<th>Semantic action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Label</td>
+<td><code>Node::label(id, text)</code></td>
+<td>Read-only</td>
+</tr>
+<tr>
+<td>Button</td>
+<td><code>Node::button(id, label)</code></td>
+<td><code>Activate</code></td>
+</tr>
+<tr>
+<td>Switch</td>
+<td><code>Node::toggle(id, label, checked)</code></td>
+<td><code>Toggle(bool)</code></td>
+</tr>
+<tr>
+<td>Slider</td>
+<td><code>Node::slider(id, label, value, min, max, step)</code></td>
+<td><code>ChangeNumber(f32)</code></td>
+</tr>
+<tr>
+<td>Single-line input</td>
+<td><code>Node::text_input(id, label, value, placeholder)</code></td>
+<td><code>ChangeText(String)</code>, <code>Submit(String)</code></td>
+</tr>
+<tr>
+<td>Column / row</td>
+<td><code>Node::column</code> / <code>Node::row</code></td>
+<td>Groups children</td>
+</tr>
+<tr>
+<td>Scroll viewport</td>
+<td><code>Node::scroll(id, children)</code></td>
+<td>Vertical wheel scrolling</td>
+</tr>
+<tr>
+<td>Custom paint</td>
+<td><code>Node::custom(id, label, interactive, paint)</code></td>
+<td>Optional <code>Activate</code></td>
+</tr>
+</tbody>
+</table>
+<p>Slider ranges must be finite, min must be below max, and step must be positive. Values are clamped and quantized. Invalid style dimensions are rejected rather than passed to the renderer. Disabling a container disables its descendants.</p>
+<h3 id="layout-is-deliberately-small">Layout is deliberately small</h3>
+<p>Coordinates are logical pixels. The native adapter converts physical input through the window scale factor; the painter rasterizes at that factor. The default width is <code>Fill</code>; default height is <code>Auto</code>. Use <code>.width(px)</code> or <code>.height(px)</code> for fixed dimensions, <code>.auto_width()</code> for intrinsic width, and <code>.fill_height()</code> for remaining vertical space. <code>.padding(px)</code> is uniform inset; <code>.gap(px)</code> separates siblings.</p>
+<p>Rows divide leftover width equally among Fill children. Columns divide leftover height equally among Fill children. Fixed children are not shrunk; overflow is clipped. Scroll containers keep children at their measured height and expose the overflow vertically. All nodes inherit parent clipping. There are no weighted flex factors, grid tracks, text wrapping or responsive media queries in v0.1.</p>
+<h2 id="make-it-yours">Make it yours</h2>
+<p>Forge's default visual language is a precision instrument: carbon and porcelain surfaces, vermilion active controls, fine borders and mint signal marks. Styling belongs to reusable tokens, not hardcoded window rendering.</p>
+<p><code>Theme::DARK</code> and <code>Theme::LIGHT</code> define background, panel, elevated surface, border, text, muted text, accent, on-accent and success colors. Override <code>Application::theme()</code> or construct your own <code>Theme</code>. Per-node <code>.background</code>, <code>.color</code>, <code>.font_size</code>, <code>.bold</code>, <code>.border</code> and <code>.radius</code> override individual properties.</p>
+<p>Custom widgets receive a painter, their logical rectangle and the active theme:</p>
+<pre><code class="language-rust">use forge_ui::*;
+
+fn meter(level: f32) -&gt; Node {
+    Node::custom(&quot;meter&quot;, &quot;Load meter&quot;, false, move |p, r, t| {
+        p.rect(r, t.elevated, 4.0);
+        p.rect(
+            Rect::new(r.x, r.y, r.w * level.clamp(0.0, 1.0), r.h),
+            t.accent,
+            4.0,
+        );
+    }).height(18.0)
+}
+</code></pre>
+<p>This pattern is compiled in <code>examples/custom.rs</code>. The workbench's custom plot also opts into activation, so pointer, Enter/Space and the agent's <code>click</code> produce the same semantic action. Custom painting should stay inside the assigned rectangle and avoid file/network I/O. Painter primitives respect the current clip; direct pixel-buffer access is an advanced escape hatch, not a security boundary.</p>
+<h2 id="give-agents-a-readable-interface">Give agents a readable interface</h2>
+<p>Start the workbench with <code>--agent</code>. The protocol lives on local stdin/stdout. No network port is opened. This is a capability granted to the process that launches the app—not an authenticated multi-user service.</p>
+<pre><code class="language-sh">cargo run --locked --release --example showcase -- --agent
+</code></pre>
+<p>Wait for the ready event before sending requests. NEDB 2.8.6 prints startup diagnostics before that marker; clients must ignore pre-ready diagnostic lines. After ready, responses are JSON lines. <code>tools/agent_client.py</code> demonstrates this handshake without dependencies.</p>
+<pre><code class="language-json">{&quot;event&quot;:&quot;ready&quot;,&quot;protocol&quot;:&quot;forge-ui/1&quot;}
+</code></pre>
+<p>Send one request and await the matching <code>request_id</code>. IDs must be strings. The maximum request line is 64 KiB. Unknown fields and unsupported operations fail explicitly. Keep inspecting outcomes: <code>ok: true</code> means the command was accepted and rendered, not that your application's reducer necessarily made the domain change you hoped for. The showcase reports <code>app.storage_error</code> separately.</p>
+<pre><code class="language-json">{&quot;request_id&quot;:&quot;1&quot;,&quot;op&quot;:&quot;inspect&quot;}
+{&quot;request_id&quot;:&quot;2&quot;,&quot;op&quot;:&quot;click&quot;,&quot;id&quot;:&quot;increment&quot;}
+{&quot;request_id&quot;:&quot;3&quot;,&quot;op&quot;:&quot;set_text&quot;,&quot;id&quot;:&quot;project_name&quot;,&quot;text&quot;:&quot;Agent-built interface&quot;}
+{&quot;request_id&quot;:&quot;4&quot;,&quot;op&quot;:&quot;set_value&quot;,&quot;id&quot;:&quot;gain&quot;,&quot;value&quot;:80}
+{&quot;request_id&quot;:&quot;5&quot;,&quot;op&quot;:&quot;key&quot;,&quot;key&quot;:&quot;Tab&quot;,&quot;shift&quot;:false}
+{&quot;request_id&quot;:&quot;6&quot;,&quot;op&quot;:&quot;screenshot&quot;,&quot;path&quot;:&quot;proof.ppm&quot;}
+{&quot;request_id&quot;:&quot;7&quot;,&quot;op&quot;:&quot;quit&quot;}
+</code></pre>
+<h3 id="read-act-assert">Read, act, assert</h3>
+<p>The inspect result contains <code>tree.nodes</code>: ID, parent, role, label, value, range, logical bounds, visible bounds, enabled state, focused state, supported actions and scroll offset/limit. Also inspect <code>tree.scale</code> and <code>tree.viewport</code>. Bounds are not screen coordinates. Offscreen controls remain in the tree; ID actions reveal them before activation.</p>
+<p>Use supported actions, not guesses about roles. <code>click</code> is for buttons, switches and interactive custom nodes; sliders use <code>set_value</code>; textboxes use <code>set_text</code>. Disabled controls are rejected. The key operation targets current focus. Supported keys are Tab, Enter, Space, ArrowLeft/Right/Up/Down, Home, End, Backspace, Delete, a and A; <code>command: true</code> with a/A selects all in text inputs.</p>
+<p>Screenshots are lossless PPM. The caller supplies the path; existing files are never overwritten. Captures contain the actual software framebuffer presented to the native window. They are not generated mockups. An agent can inspect state and capture sensitive fields, so applications must not expose secrets in this surface. Causal source tags indicate the adapter used; they do not cryptographically authenticate a human or agent identity.</p>
+<p>The normative request schema is <code>protocol.schema.json</code>. <code>AGENTS.md</code> and <code>llms.txt</code> give coding agents the shortest route into the repository.</p>
+<h2 id="state-with-receipts">State with receipts</h2>
+<p>The optional <code>journal::Journal</code> wraps the published <code>nedb-engine = 2.8.6</code> Rust crate. It does not imitate NEDB with JSON files or implement its own database. The workbench uses the embedded engine—no daemon setup required.</p>
+<p>Each commit writes one NEDB version in <code>forge_state</code>, ID <code>app</code>, containing schema version, resulting app state, action and source. Its <code>caused_by</code> references the preceding state version's hash. This keeps the action and state snapshot in one stored object rather than pretending two separate writes are transactional.</p>
+<p>The adapter calls <code>try_flush_all</code> and <code>try_flush_manifest</code>, then reads back the object by hash before reporting a saved receipt. <code>history</code> traverses native causal edges; <code>state_as_of</code> uses native historical lookup. Restoration commits the selected old state as a new version. Verification uses the engine's real object-integrity check; it is not a promise of third-party attestation or cryptographic user authentication.</p>
+<p>On opening a store, Forge acquires a process lock and verifies objects. It never calls a destructive repair or reset routine. The underlying engine owns its normal manifest/index recovery behavior. Corrupted objects cause failure and remain byte-for-byte unchanged in the tested case. Preserve the directory and investigate rather than deleting it.</p>
+<p>There is no automatic retention policy. Inputs and actions are persisted locally in plaintext; avoid secrets. Saves are synchronous in this first adapter: a slow filesystem can stall input. The UI's last-verified count is the last explicit audit, not a fresh audit on each frame. A save failure is visible; do not infer rollback of a potentially partial storage operation.</p>
+<h2 id="understand-the-engine">Understand the engine</h2>
+<pre><code class="language-text">Application::view() → validated Node tree
+                          ↓
+                  owned row/column layout
+                          ↓
+              clipped logical rectangles + semantic tree
+                          ↓
+         pointer / keyboard / JSON agent command
+                          ↓
+                    Ui event routing
+                          ↓
+              Application::update_from(action, source)
+                          ↓
+                 application state + optional NEDB commit
+                          ↓
+               fresh tree → Painter → softbuffer → window
+</code></pre>
+<ul>
+<li><code>node.rs</code>: node kinds, builder API, design tokens, semantic actions.</li>
+<li><code>runtime.rs</code>: validation, measurement, layout, clipping, hit tests, focus, text editing, scroll and inspection.</li>
+<li><code>paint.rs</code>: owned CPU rasterization, glyph cache, logical-to-physical coordinates, PPM export.</li>
+<li><code>window.rs</code>: winit lifecycle/input adapter, softbuffer presentation, opt-in JSON protocol.</li>
+<li><code>journal.rs</code>: optional real NEDB state journal.</li>
+<li><code>examples/showcase.rs</code>: application-specific state, controls, signal plot and history UI.</li>
+</ul>
+<p>No retained DOM or browser exists. The declarative tree is rebuilt when inputs are processed; state is retained by ID. Rendering is event-driven with <code>ControlFlow::Wait</code>, not a polling or animation loop.</p>
+<h2 id="verify-instead-of-assuming">Verify instead of assuming</h2>
+<pre><code class="language-sh">cargo fmt --all --check
+cargo clippy --locked --all-targets --all-features -- -D warnings
+cargo test --locked
+cargo test --locked --no-default-features
+cargo build --locked --release --examples
+cargo doc --locked --no-deps
+</code></pre>
+<p>Core tests cover sizing, clipping, disabled inheritance, focus, pointer release outside a control, semantic capability checks, Unicode grapheme edits and pixel opacity. Persistence tests use the real engine, drop/reopen the store, traverse history, read AS OF state, restore without rewriting existing objects, reject a concurrent opener, and detect deliberate object corruption.</p>
+<p><code>tools/live_test.py</code> opens a real native window under X11/Xvfb. It injects pointer and keyboard events with XTest, tests the JSON route, resizes, scrolls, captures frames, kills the process with SIGKILL and reopens the exact same store. Passing fixtures alone is not the acceptance gate.</p>
+<h3 id="known-boundaries">Known boundaries</h3>
+<p>This is v0.1, not a production-complete toolkit. No OS accessibility bridge, IME composition, bidi/complex-script shaping, fallback-font system, clipboard, undo/redo, wrapping text, rich text, menus, dialogs, GPU backend, animation scheduler or signed installers. Grapheme-aware editing does not imply full international text rendering. Custom nodes currently expose a generic custom role plus activation, not arbitrary agent-defined action schemas. Linux/X11 has live evidence; other platform claims must wait for actual tests.</p>
+<h2 id="license-and-ownership">License and ownership</h2>
+<p>Forge UI 0.1.0 uses BUSL-1.1. Licensor: Interchained LLC. Additional Use Grant: None. Change Date: September 5, 2030. Change License: GPL-3.0-only. BUSL permits non-production use; third-party production use needs a separate grant before the change date. It is source-available, not currently open source.</p>
+<p>Fonts retain their DejaVu/Bitstream terms. NEDB and all dependencies retain their own terms. Forge's change license cannot relicense third-party code. See LICENSE, COPYING-GPL-3.0.txt, THIRD_PARTY.md and the dependency inventory.</p></article><footer class="foot">FORGE UI / 0.1.0 · BUSL-1.1 → GPL-3.0-only · Change date 2030-09-05<br>Linux/X11 live-tested. Other platforms need their own native verification. <a href="https://github.com/Eth-Interchained/forge-ui/blob/main/THIRD_PARTY.md" target="_blank" rel="noopener noreferrer">Third-party notices</a></footer></main><script>
+document.getElementById('theme').onclick=()=>document.body.classList.toggle('dark');
+document.querySelectorAll('[data-shot]').forEach(b=>b.onclick=()=>{document.getElementById('shot').src='assets/'+b.dataset.shot+'.png';document.querySelectorAll('[data-shot]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});
+document.querySelectorAll('pre').forEach(pre=>{const b=document.createElement('button');b.className='copy';b.textContent='Copy';b.onclick=async()=>{const s=pre.querySelector('code').textContent;try{await navigator.clipboard.writeText(s);b.textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents(pre.querySelector('code'));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);b.textContent='Selected — copy';}setTimeout(()=>b.textContent='Copy',1800);};pre.appendChild(b);});
+document.getElementById('search').onkeydown=e=>{if(e.key!=='Enter')return;const q=e.target.value.trim().toLowerCase();if(!q)return;document.querySelectorAll('.mark').forEach(x=>x.classList.remove('mark'));const hit=[...document.querySelectorAll('.reading h2,.reading h3,.reading p,.reading td')].find(x=>x.textContent.toLowerCase().includes(q));if(hit){hit.scrollIntoView({block:'center'});hit.classList.add('mark');}else{e.target.setCustomValidity('No match in this manual');e.target.reportValidity();}};document.getElementById('search').oninput=e=>e.target.setCustomValidity('');
+</script></body></html>

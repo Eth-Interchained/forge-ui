@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ActionKind","Axis","Input","Kind","Length","Source"],"fn":["run"],"mod":["journal"],"struct":["Action","Color","LayoutItem","Node","Painter","Rect","Style","Theme","Ui","WindowOptions"],"trait":["Application"],"type":["PaintFn"]};

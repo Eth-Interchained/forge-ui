@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Forge UI protocol v1 request",
+  "description": "Opt-in JSON-lines over stdin/stdout; at most 64 KiB per line. Wait for ready. See guide.md for response semantics.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "op"
+  ],
+  "properties": {
+    "request_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "op": {
+      "enum": [
+        "inspect",
+        "click",
+        "set_text",
+        "set_value",
+        "key",
+        "screenshot",
+        "quit"
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string",
+      "description": "Single line, no control characters; at most 16384 UTF-8 bytes."
+    },
+    "value": {
+      "type": "number"
+    },
+    "key": {
+      "enum": [
+        "Tab",
+        "Enter",
+        "Space",
+        "ArrowLeft",
+        "ArrowRight",
+        "ArrowUp",
+        "ArrowDown",
+        "Home",
+        "End",
+        "Backspace",
+        "Delete",
+        "a",
+        "A"
+      ]
+    },
+    "shift": {
+      "type": "boolean",
+      "default": false
+    },
+    "command": {
+      "type": "boolean",
+      "default": false
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "op": {
+            "const": "click"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "op": {
+            "const": "set_text"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "id",
+          "text"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "op": {
+            "const": "set_value"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "id",
+          "value"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "op": {
+            "const": "key"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "key"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "op": {
+            "const": "screenshot"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "path"
+        ]
+      }
+    }
+  ]
+}
