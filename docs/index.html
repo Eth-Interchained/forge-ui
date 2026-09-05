@@ -103,7 +103,7 @@ fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     run(Counter(0), WindowOptions::default())
 }
 </code></pre>
-<p>The equivalent complete program is <code>examples/minimal.rs</code>; it is compiled by the build gate. Use <code>cargo run --example minimal --no-default-features</code> to exercise the GUI without NEDB. For a new project, use a path dependency with <code>default-features = false</code>. Enable the <code>nedb</code> feature when you want the journal adapter. The showcase requires it; the layout/rendering engine does not.</p>
+<p>The equivalent complete program is <code>examples/minimal.rs</code>; it is compiled by the build gate. Use <code>cargo run --example minimal --no-default-features</code> to exercise the GUI without NEDB. For a new project, run <code>cargo add forge-ui@0.1.0</code> to include the default NEDB adapter, or <code>cargo add forge-ui@0.1.0 --no-default-features</code> for the GUI core. Enable the <code>nedb</code> feature when you want the journal adapter. The showcase requires it; the layout/rendering engine does not.</p>
 <h2 id="compose-the-surface">Compose the surface</h2>
 <p>Every node has a unique string ID, a kind, style, enabled flag and children. Duplicate or empty IDs are rejected. IDs should express durable purpose—<code>project_name</code>, not a label that changes on every keystroke.</p>
 <table>

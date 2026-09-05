@@ -68,7 +68,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-The equivalent complete program is `examples/minimal.rs`; it is compiled by the build gate. Use `cargo run --example minimal --no-default-features` to exercise the GUI without NEDB. For a new project, use a path dependency with `default-features = false`. Enable the `nedb` feature when you want the journal adapter. The showcase requires it; the layout/rendering engine does not.
+The equivalent complete program is `examples/minimal.rs`; it is compiled by the build gate. Use `cargo run --example minimal --no-default-features` to exercise the GUI without NEDB. For a new project, run `cargo add forge-ui@0.1.0` to include the default NEDB adapter, or `cargo add forge-ui@0.1.0 --no-default-features` for the GUI core. Enable the `nedb` feature when you want the journal adapter. The showcase requires it; the layout/rendering engine does not.
 
 ## Compose the surface
 
