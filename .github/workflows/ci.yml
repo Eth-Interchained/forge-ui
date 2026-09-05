@@ -31,6 +31,17 @@ jobs:
       - name: Native XTest and crash recovery
         if: runner.os == 'Linux'
         run: xvfb-run -s '-screen 0 1400x1000x24' python3 tools/live_test.py target/release/examples/showcase
+      - name: Starter formatting
+        run: cargo fmt --manifest-path examples/forge-desk/Cargo.toml --all --check
+      - name: Starter lint against crates.io
+        run: cargo clippy --locked --manifest-path examples/forge-desk/Cargo.toml --target-dir target --all-targets -- -D warnings
+      - name: Starter tests against crates.io
+        run: cargo test --locked --manifest-path examples/forge-desk/Cargo.toml --target-dir target
+      - name: Starter release build
+        run: cargo build --locked --manifest-path examples/forge-desk/Cargo.toml --target-dir target --release
+      - name: Starter native input and crash recovery
+        if: runner.os == 'Linux'
+        run: xvfb-run -s '-screen 0 1400x1000x24' python3 examples/forge-desk/tools/smoke.py target/release/forge-desk
       - name: Workbench build
         uses: actions/upload-artifact@v4
         with:
@@ -38,6 +49,9 @@ jobs:
           path: |
             target/release/examples/showcase
             target/release/examples/showcase.exe
+            target/release/forge-desk
+            target/release/forge-desk.exe
+            examples/forge-desk/README.md
             LICENSE
             THIRD_PARTY.md
             COPYING-GPL-3.0.txt

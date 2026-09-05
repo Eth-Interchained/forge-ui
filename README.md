@@ -53,6 +53,17 @@ Use a new directory for a clean test without deleting prior data:
 cargo run --locked --release --example showcase -- --data ./my-second-forge-store
 ```
 
+## Start from a complete desktop app
+
+[Forge Desk](examples/forge-desk/README.md) lives in `examples/forge-desk/`: a task board with add/complete controls, filters, themes, NEDB history and agent mode. Its own manifest depends on **the published `forge-ui = "=0.1.0"` crate**, not this checkout.
+
+```sh
+cd examples/forge-desk
+cargo run --locked --release
+```
+
+Keep customizing in `src/state.rs`, `src/view.rs`, and `src/app.rs`. The nested README includes a test drive and agent commands. This application is a repository example, not a separate crate release.
+
 ## Build your own app
 
 ```sh

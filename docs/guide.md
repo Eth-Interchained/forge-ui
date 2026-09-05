@@ -70,6 +70,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 The equivalent complete program is `examples/minimal.rs`; it is compiled by the build gate. Use `cargo run --example minimal --no-default-features` to exercise the GUI without NEDB. For a new project, run `cargo add forge-ui@0.1.0` to include the default NEDB adapter, or `cargo add forge-ui@0.1.0 --no-default-features` for the GUI core. Enable the `nedb` feature when you want the journal adapter. The showcase requires it; the layout/rendering engine does not.
 
+### Start from Forge Desk
+
+For a fuller starting point, use the [Forge Desk application](https://github.com/Eth-Interchained/forge-ui/tree/main/examples/forge-desk) in this same repository:
+
+```sh
+cd examples/forge-desk
+cargo run --locked --release
+```
+
+It demonstrates task creation and completion, filters, themes, NEDB persistence and agent control. The nested manifest depends on `forge-ui = "=0.1.0"` from crates.io, never a local path override. Its own README explains how to customize the state reducer, view and persistence adapter. The framework's `--example showcase` command and this app's nested-manifest command are different entry points.
+
 ## Compose the surface
 
 Every node has a unique string ID, a kind, style, enabled flag and children. Duplicate or empty IDs are rejected. IDs should express durable purpose—`project_name`, not a label that changes on every keystroke.
