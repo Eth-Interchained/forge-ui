@@ -40,7 +40,73 @@ pub trait Application: 'static {
     fn inspect(&self) -> Value {
         Value::Null
     }
+    /// Advance time-based state and report whether another frame is wanted.
+    ///
+    /// The event loop is otherwise driven purely by input: it sleeps until the
+    /// user does something, which is the right default and costs nothing when
+    /// idle. That leaves no way to show work happening on ANOTHER thread — a
+    /// scan, a download, a long computation — because the window simply does
+    /// not repaint until the mouse moves. Progress freezes while the work is
+    /// fine, which reads as a hang.
+    ///
+    /// Return `true` to be called again on the next frame, `false` to go back
+    /// to sleeping on input. The default is `false`, so an application that
+    /// does not animate is completely unaffected and the loop keeps its
+    /// zero-wakeup idle behaviour.
+    ///
+    /// `tick` runs BEFORE the view is rebuilt, so state it mutates is visible
+    /// in the frame it produced. Keep it cheap: it is called at the frame rate,
+    /// not at the rate of the work being reported.
+    fn tick(&mut self) -> bool {
+        false
+    }
 }
+
+/// What the loop should do after an application's `tick`.
+///
+/// Split out as a pure function because the decision is the entire animation
+/// policy and `about_to_wait` cannot be exercised without a real event loop and
+/// a display. Untested loop policy is how a UI ends up either frozen or
+/// spinning at 100% CPU, and both failures are invisible in a headless suite.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct Sleep {
+    /// Ask the window for a new frame.
+    pub redraw: bool,
+    /// Wake on a deadline (animating) rather than only on input.
+    pub timed: bool,
+}
+
+pub(crate) fn decide_sleep(wants_more: bool, was_animating: bool) -> Sleep {
+    if wants_more {
+        // Animating: repaint and come back on a deadline.
+        Sleep {
+            redraw: true,
+            timed: true,
+        }
+    } else if was_animating {
+        // TRAILING EDGE. The app stopped animating this frame, so its final
+        // state has not been painted yet. Draw once more, then go back to
+        // sleeping on input. Without this the last frame of a finished
+        // animation — the completed progress bar, the final total — is never
+        // shown until the user happens to move the mouse.
+        Sleep {
+            redraw: true,
+            timed: false,
+        }
+    } else {
+        // Idle: no wakeups at all.
+        Sleep {
+            redraw: false,
+            timed: false,
+        }
+    }
+}
+
+/// Frame interval used while an application reports that it is animating.
+/// 60 Hz is a deliberate ceiling rather than a target: a progress indicator
+/// that costs measurable CPU is a bug, and nothing here needs to be smoother
+/// than the eye can follow.
+const FRAME: std::time::Duration = std::time::Duration::from_millis(16);
 #[derive(Clone, Debug)]
 pub struct WindowOptions {
     pub title: String,
@@ -86,6 +152,8 @@ struct Host<A: Application> {
     surface: Option<Surface<Rc<Window>, Rc<Window>>>,
     mods: ModifiersState,
     error: Option<String>,
+    /// True while the application's last `tick` asked for another frame.
+    animating: bool,
 }
 impl<A: Application> Host<A> {
     fn rebuild(&mut self) -> Result<(), String> {
@@ -314,6 +382,37 @@ impl<A: Application> ApplicationHandler<UserEvent> for Host<A> {
             self.fail(e, ev);
         }
     }
+    /// Decide how to sleep. This is the whole animation mechanism: an app that
+    /// wants another frame gets a deadline, an app that does not gets an
+    /// indefinite wait and zero wakeups.
+    fn about_to_wait(&mut self, ev: &ActiveEventLoop) {
+        // An app in a failed state must not be driven further.
+        if self.error.is_some() {
+            ev.set_control_flow(ControlFlow::Wait);
+            return;
+        }
+        let wants_more = self.app.tick();
+        let sleep = decide_sleep(wants_more, self.animating);
+        if wants_more {
+            // Rebuild so the tick's state changes reach the screen in the very
+            // frame they caused.
+            if let Err(e) = self.rebuild() {
+                self.fail(e, ev);
+                return;
+            }
+        }
+        if sleep.redraw {
+            if let Some(w) = &self.window {
+                w.request_redraw();
+            }
+        }
+        ev.set_control_flow(if sleep.timed {
+            ControlFlow::WaitUntil(std::time::Instant::now() + FRAME)
+        } else {
+            ControlFlow::Wait
+        });
+        self.animating = wants_more;
+    }
 }
 /// Run a native window. Set `options.agent` to opt into local JSON-lines stdin/stdout.
 /// No server is opened. EOF leaves the window open; send `quit` to exit.
@@ -350,10 +449,69 @@ pub fn run<A: Application>(app: A, options: WindowOptions) -> Result<(), Box<dyn
         surface: None,
         mods: ModifiersState::empty(),
         error: None,
+        animating: false,
     };
     event_loop.run_app(&mut host)?;
     if let Some(e) = host.error {
         return Err(std::io::Error::other(e).into());
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tick_tests {
+    use super::*;
+
+    /// An application that does not animate must not change the loop's
+    /// behaviour at all: no redraws, no timed wakeups, ever.
+    #[test]
+    fn idle_app_never_wakes_the_loop() {
+        let s = decide_sleep(false, false);
+        assert!(!s.redraw, "an idle app must not request frames");
+        assert!(!s.timed, "an idle app must sleep on input, not a deadline");
+    }
+
+    #[test]
+    fn animating_app_gets_frames_on_a_deadline() {
+        let s = decide_sleep(true, false);
+        assert!(s.redraw);
+        assert!(s.timed);
+        // and it keeps them while it keeps asking
+        let s = decide_sleep(true, true);
+        assert!(s.redraw);
+        assert!(s.timed);
+    }
+
+    /// The bug this exists to prevent: an animation's FINAL frame never
+    /// reaching the screen. When tick stops returning true, one more redraw is
+    /// owed — the completed progress bar, the final total — but the loop must
+    /// then stop waking up.
+    #[test]
+    fn stopping_animation_paints_one_last_frame_then_sleeps() {
+        let s = decide_sleep(false, true);
+        assert!(
+            s.redraw,
+            "the last frame of a finished animation must be painted"
+        );
+        assert!(!s.timed, "and then the loop must stop waking on a deadline");
+        // the frame after that is fully idle again
+        let s = decide_sleep(false, false);
+        assert!(!s.redraw);
+        assert!(!s.timed);
+    }
+
+    /// The trait default must be false, so adding `tick` cannot change any
+    /// existing application's behaviour.
+    #[test]
+    fn tick_defaults_to_not_animating() {
+        struct Plain;
+        impl Application for Plain {
+            fn view(&self) -> Node {
+                Node::label("l", "x")
+            }
+            fn update(&mut self, _: Action) {}
+        }
+        let mut p = Plain;
+        assert!(!p.tick(), "default tick must not opt an app into animation");
+    }
 }
