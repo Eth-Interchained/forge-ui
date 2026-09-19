@@ -1,6 +1,6 @@
 [package]
 name = "forge-ui"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "A small Rust desktop GUI framework with an owned layout and software rendering engine"
 publish = ["crates-io"]
